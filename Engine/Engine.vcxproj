@@ -140,12 +140,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine.c" />
+    <ClCompile Include="game.c" />
+    <ClCompile Include="platform_common.c" />
     <ClCompile Include="software_rendering.c" />
     <ClCompile Include="local_math.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="local_math.h" />
+    <ClInclude Include="platform_common.h" />
     <ClInclude Include="software_rendering.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>

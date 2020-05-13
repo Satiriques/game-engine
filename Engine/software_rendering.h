@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "local_math.h"
 #include <math.h>
+#include "platform_common.h"
 
 void clear_screen(Render_Buffer buffer, uint32_t color);
 

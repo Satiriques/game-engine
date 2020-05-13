@@ -1,9 +1,9 @@
-/* Learning to make a game engine using this 
+/* Learning to make a game engine using this
    https://github.com/DanZaidan/break_arcade_games_out
 */
 
 #include "engine.h"
-#include "software_rendering.h"
+
 
 static bool running = true;
 Render_Buffer render_buffer;
@@ -64,6 +64,8 @@ int __stdcall WinMain(HINSTANCE hInstance,
 	window_class.lpfnWndProc = window_callback;
 	window_class.lpszClassName = "Game_Window_Class";
 
+	Input input = { 0 };
+
 	RegisterClassA(&window_class);
 
 	HWND window = CreateWindowExA(0, window_class.lpszClassName, "Breakout",
@@ -75,35 +77,52 @@ int __stdcall WinMain(HINSTANCE hInstance,
 
 	while (running) {
 		// Input
+		for (int i = 0; i < BUTTON_COUNT; i++) {
+			input.buttons[i].changed = false;
+		}
+
 		MSG message;
 		while (PeekMessageA(&message, window, 0, 0, PM_REMOVE)) {
 			switch (message.message) {
-				case WM_KEYDOWN:
-				case WM_KEYUP: {
-					uint32_t vk_code = (uint32_t)message.wParam;
-					bool was_down = ((message.lParam & (1 << 30)) != 0);
-					bool is_down = ((message.lParam & (1 << 31)) == 0);
+			case WM_KEYDOWN:
+			case WM_KEYUP: {
+				uint32_t vk_code = (uint32_t)message.wParam;
+				bool was_down = ((message.lParam & (1 << 30)) != 0);
+				bool is_down = ((message.lParam & (1 << 31)) == 0);
 
-					if (vk_code == VK_LEFT) {
-						character = is_down;
-					}
 
-				} break;
+#define process_button(vk, b) \
+	if (vk_code == vk) { \
+		input.buttons[b].changed = is_down != input.buttons[b].is_down; \
+		input.buttons[b].is_down = is_down; \
+	}
+				process_button(VK_LEFT, BUTTON_LEFT);
+				process_button(VK_RIGHT, BUTTON_RIGHT);
+				process_button(VK_DOWN, BUTTON_DOWN);
+				process_button(VK_UP, BUTTON_UP);
 
-				default: {
-					TranslateMessage(&message);
-					DispatchMessage(&message);
-				}
+			} break;
+
+			default: {
+				TranslateMessage(&message);
+				DispatchMessage(&message);
+			}
 			}
 		}
 
+
 		// Simulation
 		clear_screen(render_buffer, 0xffff00);
+
+
+		update_game(&input, render_buffer);
+		/*
+
 		if (character) {
 			draw_rect(render_buffer, 0xFF0000, 10, 10, 100, 100);
 			draw_line(render_buffer, 0xFF00FF, 0, 0, 100, 100);
-			
-		}
+
+		}*/
 		//draw_bitmap(render_buffer, "..\\..\\..\\..\\Pictures\\max.jpg", 100, 100, 0x00FF00);
 
 		// Render
