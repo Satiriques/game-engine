@@ -1,3 +1,7 @@
+/* Learning to make a game engine using this 
+   https://github.com/DanZaidan/break_arcade_games_out
+*/
+
 #include "engine.h"
 #include "software_rendering.h"
 
