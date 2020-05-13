@@ -30,7 +30,7 @@ LRESULT CALLBACK window_callback(_In_ HWND window,
 		}
 
 		render_buffer.pixels = VirtualAlloc(0, sizeof(uint32_t) * render_buffer.width * render_buffer.height,
-			MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
+			MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
 		render_buffer.bitmap_info.bmiHeader.biSize = sizeof(render_buffer.bitmap_info.bmiHeader);
 		render_buffer.bitmap_info.bmiHeader.biWidth = render_buffer.width;
@@ -67,22 +67,43 @@ int __stdcall WinMain(HINSTANCE hInstance,
 		CW_USEDEFAULT, 1280, 720, 0, 0, 0, 0);
 
 	HDC hdc = GetDC(window);
+	int character = false;
 
 	while (running) {
 		// Input
 		MSG message;
 		while (PeekMessageA(&message, window, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&message);
-			DispatchMessage(&message);
+			switch (message.message) {
+				case WM_KEYDOWN:
+				case WM_KEYUP: {
+					uint32_t vk_code = (uint32_t)message.wParam;
+					bool was_down = ((message.lParam & (1 << 30)) != 0);
+					bool is_down = ((message.lParam & (1 << 31)) == 0);
+
+					if (vk_code == VK_LEFT) {
+						character = is_down;
+					}
+
+				} break;
+
+				default: {
+					TranslateMessage(&message);
+					DispatchMessage(&message);
+				}
+			}
 		}
 
 		// Simulation
 		clear_screen(render_buffer, 0xffff00);
-		draw_rect(render_buffer, 0xFF0000, 10, 10, 100, 100);
-		draw_line(render_buffer, 0xFF00FF, 0, 0, 100, 100);
+		if (character) {
+			draw_rect(render_buffer, 0xFF0000, 10, 10, 100, 100);
+			draw_line(render_buffer, 0xFF00FF, 0, 0, 100, 100);
+			
+		}
+		//draw_bitmap(render_buffer, "..\\..\\..\\..\\Pictures\\max.jpg", 100, 100, 0x00FF00);
 
 		// Render
-		StretchDIBits(hdc, 0, 0, render_buffer.width, render_buffer.height, 0, 0, render_buffer.width, 
+		StretchDIBits(hdc, 0, 0, render_buffer.width, render_buffer.height, 0, 0, render_buffer.width,
 			render_buffer.height, render_buffer.pixels, &render_buffer.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 	}
 }

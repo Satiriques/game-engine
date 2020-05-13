@@ -147,6 +147,7 @@
     <ClInclude Include="engine.h" />
     <ClInclude Include="local_math.h" />
     <ClInclude Include="software_rendering.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

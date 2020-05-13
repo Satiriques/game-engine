@@ -1,5 +1,8 @@
 #include "software_rendering.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 void clear_screen(Render_Buffer buffer, uint32_t color) {
 	uint32_t* pixels = buffer.pixels;
 
@@ -55,7 +58,7 @@ void draw_line(Render_Buffer buffer, uint32_t color, int x1, int y1, int x2, int
 		if (x1 >= 0 && x1 < buffer.width && y1 >= 0 && x1 < buffer.height) {
 			draw_pixel(buffer, color, x1, y1);
 		}
-		
+
 		if (x1 == x2 && y1 == y2) break;
 		e2 = 2 * err;
 		if (e2 >= dy) {
@@ -68,3 +71,38 @@ void draw_line(Render_Buffer buffer, uint32_t color, int x1, int y1, int x2, int
 		}
 	}
 }
+
+void reverse_range(uint8_t* buffer, int left, int right)
+{
+	while (left < right)
+	{
+		int temp = buffer[left];
+		buffer[left++] = buffer[right];
+		buffer[right--] = temp;
+	}
+}
+
+void draw_bitmap(Render_Buffer buffer, char* file, int x1, int y1, uint32_t transparency) {
+	int width, height, bpp, y, x;
+
+	uint8_t* image = stbi_load(file, &width, &height, &bpp, 3);
+
+	//to do: fix algo so this is not needed
+	reverse_range(image, 0, width * height * 3 - 1);
+
+	for (int i = 0; i < width * height * 3; i += 3) {
+		uint32_t color = image[i] | image[i + 1] << 8 | image[i + 2] << 16;
+		y = y1 + (i / 3 / width);
+		x = x1 + i / 3 % width;
+		if (color != transparency) {
+			draw_pixel(buffer, color, x, y);
+		}
+
+	}
+
+	stbi_image_free(image);
+}
+
+
+
+
