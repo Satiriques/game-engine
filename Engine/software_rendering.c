@@ -32,28 +32,28 @@ void draw_rect_in_pixels(Render_Buffer buffer, uint32_t color, int x1, int y1, i
 	}
 }
 
-void draw_rect(Render_Buffer buffer, v2 p, v2 half_size, uint32_t color){
-	float aspect_multiplier = (float)buffer.width;
+void draw_rect(Render_Buffer buffer, v2 pos, v2 half_size, uint32_t color){
+	float aspect_multiplier = (float)buffer.height;
 	float scale = 0.001f;
 
 	if ((float)buffer.width / (float)buffer.height < 1.77f)
-		aspect_multiplier = (float)buffer.height / 1.77f;
+		aspect_multiplier = (float)buffer.width / 1.77f;
 
 	half_size.x *= aspect_multiplier * scale;
 	half_size.y *= aspect_multiplier * scale;
 
-	p.x *= aspect_multiplier * scale;
-	p.y *= aspect_multiplier * scale;
+	pos.x *= aspect_multiplier * scale;
+	pos.y *= aspect_multiplier * scale;
 
 	// centers the coordinates
-	p.x += (float)buffer.width * .5f;
-	p.y += (float)buffer.height * .5f;
+	pos.x += (float)buffer.width * .5f;
+	pos.y += (float)buffer.height * .5f;
 
 	// gets the x and y around the center point
-	int x1 = (int)(p.x - half_size.x);
-	int y1 = (int)(p.y - half_size.y);
-	int x2 = (int)(p.x + half_size.x);
-	int y2 = (int)(p.y + half_size.y);
+	int x1 = (int)(pos.x - half_size.x);
+	int y1 = (int)(pos.y - half_size.y);
+	int x2 = (int)(pos.x + half_size.x);
+	int y2 = (int)(pos.y + half_size.y);
 
 	draw_rect_in_pixels(buffer, color, x1, y1, x2, y2);
 }

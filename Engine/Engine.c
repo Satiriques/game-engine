@@ -58,13 +58,22 @@ int __stdcall WinMain(HINSTANCE hInstance,
 	LPSTR     lpCmdLine,
 	int       nShowCmd
 ) {
-	WNDCLASSA window_class = { 0 };
+	WNDCLASSA window_class = { 0 }; 
+	LARGE_INTEGER last_counter;
+	LARGE_INTEGER frequency_counter;
 
 	window_class.style = CS_HREDRAW | CS_VREDRAW;
 	window_class.lpfnWndProc = window_callback;
 	window_class.lpszClassName = "Game_Window_Class";
 
 	Input input = { 0 };
+
+	float dt = 0.0166666f;
+
+	
+	QueryPerformanceCounter(&last_counter);
+
+	QueryPerformanceFrequency(&frequency_counter);
 
 	RegisterClassA(&window_class);
 
@@ -115,18 +124,17 @@ int __stdcall WinMain(HINSTANCE hInstance,
 		clear_screen(render_buffer, 0xffff00);
 
 		// todo: dt
-		update_game(&input, render_buffer, 0.01666f);
-		/*
-
-		if (character) {
-			draw_rect(render_buffer, 0xFF0000, 10, 10, 100, 100);
-			draw_line(render_buffer, 0xFF00FF, 0, 0, 100, 100);
-
-		}*/
-		//draw_bitmap(render_buffer, "..\\..\\..\\..\\Pictures\\max.jpg", 100, 100, 0x00FF00);
+		update_game(&input, render_buffer, dt);
 
 		// Render
 		StretchDIBits(hdc, 0, 0, render_buffer.width, render_buffer.height, 0, 0, render_buffer.width,
 			render_buffer.height, render_buffer.pixels, &render_buffer.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
+
+		LARGE_INTEGER current_counter;
+		QueryPerformanceCounter(&current_counter);
+
+		dt = ((float)(current_counter.QuadPart - last_counter.QuadPart) / frequency_counter.QuadPart);
+
+		last_counter = current_counter;
 	}
 }
