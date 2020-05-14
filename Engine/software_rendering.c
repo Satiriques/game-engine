@@ -13,7 +13,7 @@ void clear_screen(Render_Buffer buffer, uint32_t color) {
 	}
 }
 
-void draw_rect(Render_Buffer buffer, uint32_t color, int x1, int y1, int x2, int y2)
+void draw_rect_in_pixels(Render_Buffer buffer, uint32_t color, int x1, int y1, int x2, int y2)
 {
 	x1 = clamp(0, x1, buffer.width);
 	y1 = clamp(0, y1, buffer.height);
@@ -32,6 +32,32 @@ void draw_rect(Render_Buffer buffer, uint32_t color, int x1, int y1, int x2, int
 	}
 }
 
+void draw_rect(Render_Buffer buffer, v2 p, v2 half_size, uint32_t color){
+	float aspect_multiplier = (float)buffer.width;
+	float scale = 0.001f;
+
+	if ((float)buffer.width / (float)buffer.height < 1.77f)
+		aspect_multiplier = (float)buffer.height;
+
+	half_size.x *= aspect_multiplier * scale;
+	half_size.y *= aspect_multiplier * scale;
+
+	p.x *= aspect_multiplier * scale;
+	p.y *= aspect_multiplier * scale;
+
+	// centers the coordinates
+	p.x += (float)buffer.width * .5f;
+	p.y += (float)buffer.height * .5f;
+
+	// gets the x and y around the center point
+	int x1 = (int)(p.x - half_size.x);
+	int y1 = (int)(p.y - half_size.y);
+	int x2 = (int)(p.x + half_size.x);
+	int y2 = (int)(p.y + half_size.y);
+
+	draw_rect_in_pixels(buffer, color, x1, y1, x2, y2);
+}
+
 void draw_pixel(Render_Buffer buffer, uint32_t color, int x, int y) {
 	uint32_t* pixels = buffer.pixels;
 	pixels[y * buffer.width + x] = color;
@@ -46,7 +72,7 @@ void draw_pixel(Render_Buffer buffer, uint32_t color, int x, int y) {
 /// <param name="y1"></param>
 /// <param name="x2"></param>
 /// <param name="y2"></param>
-void draw_line(Render_Buffer buffer, uint32_t color, int x1, int y1, int x2, int y2) {
+void draw_line_in_pixels(Render_Buffer buffer, uint32_t color, int x1, int y1, int x2, int y2) {
 	double dx = fabs((double)x2 - (double)x1);
 	int sx = x1 < x2 ? 1 : -1;
 	double dy = -fabs((double)y2 - (double)y1);
@@ -102,6 +128,8 @@ void draw_bitmap(Render_Buffer buffer, char* file, int x1, int y1, uint32_t tran
 
 	stbi_image_free(image);
 }
+
+
 
 
 
