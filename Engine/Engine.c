@@ -114,8 +114,8 @@ int __stdcall WinMain(HINSTANCE hInstance,
 		// Simulation
 		clear_screen(render_buffer, 0xffff00);
 
-
-		update_game(&input, render_buffer);
+		// todo: dt
+		update_game(&input, render_buffer, 0.01666f);
 		/*
 
 		if (character) {

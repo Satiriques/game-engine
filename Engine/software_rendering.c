@@ -37,7 +37,7 @@ void draw_rect(Render_Buffer buffer, v2 p, v2 half_size, uint32_t color){
 	float scale = 0.001f;
 
 	if ((float)buffer.width / (float)buffer.height < 1.77f)
-		aspect_multiplier = (float)buffer.height;
+		aspect_multiplier = (float)buffer.height / 1.77f;
 
 	half_size.x *= aspect_multiplier * scale;
 	half_size.y *= aspect_multiplier * scale;
